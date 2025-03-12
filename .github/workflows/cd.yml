@@ -1,0 +1,20 @@
+name: Deploy to staging
+on:
+  push:
+    branches: [ new ] # Change it with the branch you want this pipeline to run
+
+jobs:
+  redploy_everything:
+    name: Redploy everything to staging
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: SSH into the server
+        run: |
+          ssh -i ${{ secrets.PRIVATE_KEY }} root@1.1.1.1
+          cd turbo-cicd && git pull
+          npm i -g pnpm
+          pnpm build
+          pm2 restart http-service
+          pm2 restart ws-service
+          pm2 restart web
